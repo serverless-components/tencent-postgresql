@@ -1,16 +1,13 @@
 const { Component } = require('@serverless/core')
-const Capi = require('qcloudapi-sdk')
-const TencentLogin = require('tencent-login')
-const _ = require('lodash')
-const fs = require('fs')
+const { Capi } = require('@tencent-sdk/capi')
+const { getTempKey } = require('./login')
 const { CreateServerlessDBInstance, DeleteServerlessDBInstance } = require('./apis')
 const {
   TIMEOUT,
   getDbInstanceDetail,
   formatPgUrl,
   toggleDbInstanceAccess,
-  waitForStatus,
-  sleep
+  waitForStatus
 } = require('./utils')
 
 const defaults = {
@@ -18,108 +15,26 @@ const defaults = {
   zone: 'ap-guangzhou-2',
   projectId: 0,
   dBVersion: '10.4',
-  dBCharset: 'latin1',
+  dBCharset: 'UTF8',
   extranetAccess: false
 }
 
 class TencentDB extends Component {
-  async doLogin() {
-    const login = new TencentLogin()
-    const tencent_credentials = await login.login()
-    if (tencent_credentials) {
-      tencent_credentials.timestamp = Date.now() / 1000
-      try {
-        const tencent = {
-          SecretId: tencent_credentials.secret_id,
-          SecretKey: tencent_credentials.secret_key,
-          AppId: tencent_credentials.appid,
-          token: tencent_credentials.token,
-          expired: tencent_credentials.expired,
-          signature: tencent_credentials.signature,
-          uuid: tencent_credentials.uuid,
-          timestamp: tencent_credentials.timestamp
-        }
-        await fs.writeFileSync('./.env_temp', JSON.stringify(tencent))
-        return tencent
-      } catch (e) {
-        throw 'Error getting temporary key: ' + e
-      }
-    }
-  }
-
-  async getTempKey(temp) {
-    const that = this
-
-    if (temp) {
-      while (true) {
-        try {
-          const tencent_credentials_read = JSON.parse(await fs.readFileSync('./.env_temp', 'utf8'))
-          if (
-            Date.now() / 1000 - tencent_credentials_read.timestamp <= 6000 &&
-            tencent_credentials_read.AppId
-          ) {
-            return tencent_credentials_read
-          }
-          await sleep(1000)
-        } catch (e) {
-          await sleep(1000)
-        }
-      }
-    }
-
-    try {
-      const data = await fs.readFileSync('./.env_temp', 'utf8')
-      try {
-        const tencent = {}
-        const tencent_credentials_read = JSON.parse(data)
-        if (
-          Date.now() / 1000 - tencent_credentials_read.timestamp <= 6000 &&
-          tencent_credentials_read.AppId
-        ) {
-          return tencent_credentials_read
-        }
-        const login = new TencentLogin()
-        const tencent_credentials_flush = await login.flush(
-          tencent_credentials_read.uuid,
-          tencent_credentials_read.expired,
-          tencent_credentials_read.signature,
-          tencent_credentials_read.AppId
-        )
-        if (tencent_credentials_flush) {
-          tencent.SecretId = tencent_credentials_flush.secret_id
-          tencent.SecretKey = tencent_credentials_flush.secret_key
-          tencent.AppId = tencent_credentials_flush.appid
-          tencent.token = tencent_credentials_flush.token
-          tencent.expired = tencent_credentials_flush.expired
-          tencent.signature = tencent_credentials_flush.signature
-          tencent.uuid = tencent_credentials_read.uuid
-          tencent.timestamp = Date.now() / 1000
-          await fs.writeFileSync('./.env_temp', JSON.stringify(tencent))
-          return tencent
-        }
-        return await that.doLogin()
-      } catch (e) {
-        return await that.doLogin()
-      }
-    } catch (e) {
-      return await that.doLogin()
-    }
-  }
-
   async initCredential() {
-    // login
-    const temp = this.context.instance.state.status
-    this.context.instance.state.status = true
-    let { tencent } = this.context.credentials
+    const { context } = this
+    const temp = context.instance.state.status
+    context.instance.state.status = true
+    let { tencent } = context.credentials
     if (!tencent) {
-      tencent = await this.getTempKey(temp)
-      this.context.credentials.tencent = tencent
+      tencent = await getTempKey(temp)
+      context.credentials.tencent = tencent
     }
   }
 
   async default(inputs = {}) {
+    const { context } = this
     await this.initCredential()
-    this.context.status('Deploying')
+    context.status('Deploying')
 
     const {
       region,
@@ -130,17 +45,16 @@ class TencentDB extends Component {
       dBCharset,
       vpcConfig,
       extranetAccess
-    } = _.merge(defaults, inputs)
+    } = {
+      ...defaults,
+      ...inputs
+    }
 
     const apig = new Capi({
       Region: region,
-      AppId: this.context.credentials.tencent.AppId,
-      SecretId: this.context.credentials.tencent.SecretId,
-      SecretKey: this.context.credentials.tencent.SecretKey,
-      Token: this.context.credentials.tencent.token,
-      Version: '2017-03-12',
-      serviceType: 'postgres',
-      baseHost: 'api.qcloud.com'
+      AppId: context.credentials.tencent.AppId,
+      SecretId: context.credentials.tencent.SecretId,
+      SecretKey: context.credentials.tencent.SecretKey
     })
 
     const state = {
@@ -156,11 +70,12 @@ class TencentDB extends Component {
       dBInstanceName: dBInstanceName
     }
 
-    const dbDetail = await getDbInstanceDetail(apig, dBInstanceName)
-    if (dbDetail && dbDetail.DBInstanceName) {
+    let dbDetail = await getDbInstanceDetail(context, apig, dBInstanceName)
+
+    if (dbDetail && dbDetail.dBInstanceName) {
       // exist, update
-      this.context.debug(`DB instance ${dBInstanceName} existed, updating...`)
-      await toggleDbInstanceAccess.call(this, apig, dBInstanceName, extranetAccess)
+      context.debug(`DB instance ${dBInstanceName} existed, updating...`)
+      await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
     } else {
       // not exist, create
       const postgresInputs = {
@@ -175,28 +90,27 @@ class TencentDB extends Component {
       if (vpcConfig.subnetId) {
         postgresInputs.SubnetId = vpcConfig.subnetId
       }
-      this.context.debug(`Start create DB instance ${dBInstanceName}...`)
-      const { DBInstanceId } = await CreateServerlessDBInstance({
-        ...apig,
-        ...postgresInputs
-      })
+      context.debug(`Start create DB instance ${dBInstanceName}...`)
+      const { DBInstanceId } = await CreateServerlessDBInstance(apig, postgresInputs)
+      this.context.debug(`Creating DB instance ID: ${DBInstanceId}`)
       state.dBInstanceId = DBInstanceId
 
-      await waitForStatus({
-        callback: async () => getDbInstanceDetail(apig, dBInstanceName),
+      dbDetail = await waitForStatus({
+        callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
         targetStatus: 'running',
         statusProp: 'DBInstanceStatus',
         timeout: TIMEOUT
       })
 
       if (extranetAccess) {
-        await toggleDbInstanceAccess.call(this, apig, dBInstanceName, extranetAccess)
+        await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
       }
     }
 
     const {
       DBInstanceNetInfo,
-      DBAccountSet: [accountInfo]
+      DBAccountSet: [accountInfo],
+      DBDatabaseList: [dbName]
     } = dbDetail
     let internetInfo = null
     let extranetInfo = null
@@ -209,10 +123,10 @@ class TencentDB extends Component {
       }
     })
     outputs.connects = {
-      private: formatPgUrl(internetInfo, accountInfo)
+      private: formatPgUrl(internetInfo, accountInfo, dbName)
     }
     if (extranetAccess && extranetInfo) {
-      outputs.connects.public = formatPgUrl(extranetInfo, accountInfo)
+      outputs.connects.public = formatPgUrl(extranetInfo, accountInfo, dbName)
     }
 
     this.state = state
@@ -222,33 +136,27 @@ class TencentDB extends Component {
   }
 
   async remove(inputs = {}) {
+    const { context } = this
     await this.initCredential()
 
     const { state } = this
     const { region } = state
-    const dbInstanceName = inputs.dbInstanceName || state.dbInstanceName
-    this.context.status('Removing')
+    const dBInstanceName = inputs.dBInstanceName || state.dBInstanceName
+    context.status('Removing')
 
     const apig = new Capi({
       Region: region,
-      AppId: this.context.credentials.tencent.AppId,
-      SecretId: this.context.credentials.tencent.SecretId,
-      SecretKey: this.context.credentials.tencent.SecretKey,
-      Token: this.context.credentials.tencent.token,
-      Version: '2017-03-12',
-      serviceType: 'postgres',
-      baseHost: 'api.qcloud.com'
+      AppId: context.credentials.tencent.AppId,
+      SecretId: context.credentials.tencent.SecretId,
+      SecretKey: context.credentials.tencent.SecretKey
     })
 
     // need circle for deleting, after host status is 6, then we can delete it
-    this.context.debug(`Start removing postgres instance ${dbInstanceName}`)
-    await DeleteServerlessDBInstance({
-      ...apig,
-      ...{
-        DbInstanceName: dbInstanceName
-      }
+    context.debug(`Start removing postgres instance ${dBInstanceName}`)
+    await DeleteServerlessDBInstance(apig, {
+      DBInstanceName: dBInstanceName
     })
-    this.context.debug(`Removed postgres instance ${dbInstanceName}.`)
+    context.debug(`Removed postgres instance ${dBInstanceName}.`)
     this.state = {}
     await this.save()
     return {}

@@ -1,13 +1,13 @@
 {
-  "name": "@serverless/tencent-postgres",
-  "description": "Tencent Cloud PostgresSQL DB Component",
-  "version": "1.0.0",
-  "main": "src/index.js",
+  "name": "@serverless/tencent-postgresql",
+  "description": "Tencent Cloud PostgresSQL Component",
+  "version": "0.1.0",
+  "main": "serverless.js",
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
-    "cdn",
+    "postgresql",
     "serverless",
     "serverless-component",
     "serverlesscomponent",
@@ -15,49 +15,49 @@
   ],
   "scripts": {
     "commitlint": "commitlint -f HEAD@{15}",
-    "commitlint-ci-pull-request": "commitlint -f HEAD~1",
-    "lint": "eslint . --cache",
-    "lint:updated": "pipe-git-updated --ext=js -- eslint --cache",
-    "prepare-release": "standard-version && prettier --write CHANGELOG.md",
-    "prettier-check": "prettier -c --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
-    "prettier-check:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier -c",
-    "prettify": "prettier --write --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
-    "prettify:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier --write"
+    "test": "tape *.test.js",
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
+    "prettier": "prettier --check **/*.{css,html,js,json,md,yaml,yml}",
+    "prettier:fix": "prettier --write **/*.{css,html,js,json,md,yaml,yml}",
+    "release": "standard-version"
   },
   "author": "Tencent Cloud, Inc.",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
-    "*.js": [
-      "eslint"
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix --ext .js,.ts,.tsx .",
+      "git add ."
     ],
-    "*.{css,html,js,json,md,yaml,yml}": [
-      "prettier -c"
+    "**/*.{css,html,js,json,md,yaml,yml}": [
+      "npm run prettier:fix",
+      "git add ."
     ]
   },
   "standard-version": {
     "skip": {
-      "commit": true,
-      "tag": true
+      "tag": false
     }
   },
   "dependencies": {
-    "@serverless/core": "^1.0.0",
-    "lodash": "^4.17.15",
-    "qcloudapi-sdk": "^0.2.1",
-    "tencent-login": "^0.1.6"
+    "@serverless/core": "^1.1.2",
+    "@tencent-sdk/capi": "^0.2.10",
+    "@tencent-sdk/login": "^0.0.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "babel-eslint": "9.0.0",
     "eslint": "5.6.0",
     "eslint-config-prettier": "^3.6.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-prettier": "^3.0.1",
-    "git-list-updated": "^1.2.1",
     "github-release-from-cc-changelog": "^2.2.0",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",

@@ -13,17 +13,34 @@ async function sleep(ms) {
   })
 }
 
-async function getDbInstanceDetail(apig, dBInstanceName) {
+/**
+ *
+ * @param {object} context serverless context
+ * @param {object} apig capi instance
+ * @param {*} dBInstanceName
+ */
+async function getDbInstanceDetail(context, apig, dBInstanceName) {
   // get instance detail
-  const {
-    DBInstanceSet: [dbDetail]
-  } = await DescribeServerlessDBInstances({
-    ...apig,
-    ...{
-      Filters: [dBInstanceName]
+  try {
+    const res = await DescribeServerlessDBInstances(apig, {
+      Filter: [
+        {
+          Name: 'db-instance-name',
+          Values: [dBInstanceName]
+        }
+      ]
+    })
+    if (res.DBInstanceSet) {
+      const {
+        DBInstanceSet: [dbDetail]
+      } = res
+      return dbDetail
     }
-  })
-  return dbDetail
+    return null
+  } catch (e) {
+    context.debug(e)
+    return null
+  }
 }
 
 /**
@@ -68,7 +85,7 @@ async function waitForStatus({
       }
       const detail = await callback()
       // 4: deploying, 1: created
-      if (detail[statusProp] === targetStatus) {
+      if (detail && detail[statusProp] === targetStatus) {
         resolve(detail)
       } else {
         await sleep(1000)
@@ -88,44 +105,38 @@ async function waitForStatus({
   })
 }
 
-async function toggleDbInstanceAccess(apig, dBInstanceName, extranetAccess) {
+async function toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess) {
   if (extranetAccess) {
-    this.context.debug(`Start open db extranet access...`)
-    await OpenServerlessDBExtranetAccess({
-      ...apig,
-      ...{
-        DBInstanceName: dBInstanceName
-      }
+    context.debug(`Start open db extranet access...`)
+    await OpenServerlessDBExtranetAccess(apig, {
+      DBInstanceName: dBInstanceName
     })
     const detail = await waitForStatus({
-      callback: async () => getDbInstanceDetail(apig, dBInstanceName),
+      callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
       targetStatus: 'running',
       statusProp: 'DBInstanceStatus',
       timeout: TIMEOUT
     })
-    this.context.debug(`Open db extranet access success`)
+    context.debug(`Open db extranet access success`)
     return detail
   }
-  this.context.debug(`Start close db extranet access...`)
-  await CloseServerlessDBExtranetAccess({
-    ...apig,
-    ...{
-      DBInstanceName: dBInstanceName
-    }
+  context.debug(`Start close db extranet access...`)
+  await CloseServerlessDBExtranetAccess(apig, {
+    DBInstanceName: dBInstanceName
   })
   const detail = await waitForStatus({
-    callback: async () => getDbInstanceDetail(apig, dBInstanceName),
+    callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
     targetStatus: 'running',
     statusProp: 'DBInstanceStatus',
     timeout: TIMEOUT
   })
-  this.context.debug(`Close db extranet access success`)
+  context.debug(`Close db extranet access success`)
   return detail
 }
 
-function formatPgUrl(netInfo, accountInfo) {
+function formatPgUrl(netInfo, accountInfo, dbName) {
   return `postgresql://${accountInfo.DBUser}:${accountInfo.DBPassword}@${netInfo.Address ||
-    netInfo.Ip}:${netInfo.Port}`
+    netInfo.Ip}:${netInfo.Port}/${dbName}`
 }
 
 module.exports = {

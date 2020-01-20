@@ -66,7 +66,7 @@ module.exports = {
     ],
     semi: ['error', 'never'],
     'spaced-comment': 'error',
-    strict: ['error', 'never'],
+    strict: ['error', 'global'],
     'prettier/prettier': 'error'
   }
 }

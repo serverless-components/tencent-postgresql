@@ -1,0 +1,10 @@
+MyPostgres:
+  component: '@serverless/tencent-postgresql'
+  inputs:
+    region: na-siliconvalley
+    zone: na-siliconvalley-1
+    dBInstanceName: postgres-test
+    vpcConfig:
+      vpcId: vpc-91y4snip
+      subnetId: subnet-nytqgrho
+    extranetAccess: false
