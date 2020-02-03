@@ -1,8 +1,10 @@
-const { sleep, waitStatus } = require('@ygkit/request')
+const { sleep, waitResponse } = require('@ygkit/request')
 const {
+  CreateServerlessDBInstance,
   DescribeServerlessDBInstances,
   OpenServerlessDBExtranetAccess,
-  CloseServerlessDBExtranetAccess
+  CloseServerlessDBExtranetAccess,
+  DeleteServerlessDBInstance
 } = require('./apis')
 
 // timeout 5 minutes
@@ -39,6 +41,20 @@ async function getDbInstanceDetail(context, apig, dBInstanceName) {
 }
 
 /**
+ * get db public access status
+ * @param {array} netInfos network infos
+ */
+function getDbExtranetAccess(netInfos) {
+  let result = false
+  netInfos.forEach((item) => {
+    if (item.NetType === 'public') {
+      result = item.Status === '1'
+    }
+  })
+  return result
+}
+
+/**
  INSTANCE_STATUS_APPLYING:    "applying",    申请中
  INSTANCE_STATUS_INIT:        "init",        待初始化
  INSTANCE_STATUS_INITING:     "initing",     初始化中
@@ -55,16 +71,23 @@ async function getDbInstanceDetail(context, apig, dBInstanceName) {
  INSTANCE_STATUS_RESTARTING:  "restarting",  重启中
  */
 
+/**
+ * toggle db instance extranet access
+ * @param {object} context serverless component context
+ * @param {object} apig capi client
+ * @param {string} dBInstanceName db instance name
+ * @param {boolean} extranetAccess whether open extranet accesss
+ */
 async function toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess) {
   if (extranetAccess) {
     context.debug(`Start open db extranet access...`)
     await OpenServerlessDBExtranetAccess(apig, {
       DBInstanceName: dBInstanceName
     })
-    const detail = await waitStatus({
+    const detail = await waitResponse({
       callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
-      targetStatus: 'running',
-      statusProp: 'DBInstanceStatus',
+      targetResponse: 'running',
+      targetProp: 'DBInstanceStatus',
       timeout: TIMEOUT
     })
     context.debug(`Open db extranet access success`)
@@ -74,16 +97,64 @@ async function toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAcc
   await CloseServerlessDBExtranetAccess(apig, {
     DBInstanceName: dBInstanceName
   })
-  const detail = await waitStatus({
+  const detail = await waitResponse({
     callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
-    targetStatus: 'running',
-    statusProp: 'DBInstanceStatus',
+    targetResponse: 'running',
+    targetProp: 'DBInstanceStatus',
     timeout: TIMEOUT
   })
   context.debug(`Close db extranet access success`)
   return detail
 }
 
+/**
+ * create db instance
+ * @param {object} context serverless component context
+ * @param {object} apig capi client
+ * @param {object} postgresInputs create db instance inputs
+ */
+async function createDbInstance(context, apig, postgresInputs) {
+  context.debug(`Start create DB instance ${postgresInputs.DBInstanceName}...`)
+  const { DBInstanceId } = await CreateServerlessDBInstance(apig, postgresInputs)
+  context.debug(`Creating DB instance ID: ${DBInstanceId}`)
+
+  const detail = await waitResponse({
+    callback: async () => getDbInstanceDetail(context, apig, postgresInputs.DBInstanceName),
+    targetResponse: 'running',
+    targetProp: 'DBInstanceStatus',
+    timeout: TIMEOUT
+  })
+  context.debug(`Created DB instance name ${postgresInputs.DBInstanceName} successfully`)
+  return detail
+}
+
+/**
+ * delete db instance
+ * @param {object} context serverless component context
+ * @param {object} apig capi client
+ * @param {string} db instance name
+ */
+async function deleteDbInstance(context, apig, dBInstanceName) {
+  context.debug(`Start removing postgres instance ${dBInstanceName}`)
+  await DeleteServerlessDBInstance(apig, {
+    DBInstanceName: dBInstanceName
+  })
+  const detail = await waitResponse({
+    callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
+    targetResponse: undefined,
+    targetProp: 'DBInstanceStatus',
+    timeout: TIMEOUT
+  })
+  context.debug(`Removed postgres instance ${dBInstanceName}.`)
+  return detail
+}
+
+/**
+ * format postgresql connect string
+ * @param {object} netInfo network info
+ * @param {object} accountInfo account info
+ * @param {string} dbName db name
+ */
 function formatPgUrl(netInfo, accountInfo, dbName) {
   return `postgresql://${accountInfo.DBUser}:${accountInfo.DBPassword}@${netInfo.Address ||
     netInfo.Ip}:${netInfo.Port}/${dbName}`
@@ -91,8 +162,10 @@ function formatPgUrl(netInfo, accountInfo, dbName) {
 
 module.exports = {
   TIMEOUT,
+  createDbInstance,
   getDbInstanceDetail,
-  waitStatus,
+  getDbExtranetAccess,
+  deleteDbInstance,
   toggleDbInstanceAccess,
   formatPgUrl,
   sleep

@@ -1,13 +1,13 @@
 const { Component } = require('@serverless/core')
 const { Capi } = require('@tencent-sdk/capi')
 const { getTempKey } = require('./login')
-const { CreateServerlessDBInstance, DeleteServerlessDBInstance } = require('./apis')
 const {
-  TIMEOUT,
+  createDbInstance,
   getDbInstanceDetail,
-  formatPgUrl,
+  getDbExtranetAccess,
   toggleDbInstanceAccess,
-  waitForStatus
+  deleteDbInstance,
+  formatPgUrl
 } = require('./utils')
 
 const defaults = {
@@ -72,10 +72,15 @@ class TencentDB extends Component {
 
     let dbDetail = await getDbInstanceDetail(context, apig, dBInstanceName)
 
-    if (dbDetail && dbDetail.dBInstanceName) {
-      // exist, update
-      context.debug(`DB instance ${dBInstanceName} existed, updating...`)
-      await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
+    if (dbDetail && dbDetail.DBInstanceName) {
+      const publicAccess = getDbExtranetAccess(dbDetail.DBInstanceNetInfo)
+      // exist and public access config different, update db instance
+      if (publicAccess !== extranetAccess) {
+        context.debug(`DB instance ${dBInstanceName} existed, updating...`)
+        await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
+      } else {
+        context.debug(`DB instance ${dBInstanceName} existed.`)
+      }
     } else {
       // not exist, create
       const postgresInputs = {
@@ -90,18 +95,8 @@ class TencentDB extends Component {
       if (vpcConfig.subnetId) {
         postgresInputs.SubnetId = vpcConfig.subnetId
       }
-      context.debug(`Start create DB instance ${dBInstanceName}...`)
-      const { DBInstanceId } = await CreateServerlessDBInstance(apig, postgresInputs)
-      this.context.debug(`Creating DB instance ID: ${DBInstanceId}`)
-      state.dBInstanceId = DBInstanceId
-
-      dbDetail = await waitForStatus({
-        callback: async () => getDbInstanceDetail(context, apig, dBInstanceName),
-        targetStatus: 'running',
-        statusProp: 'DBInstanceStatus',
-        timeout: TIMEOUT
-      })
-
+      dbDetail = await createDbInstance(this.context, apig, postgresInputs)
+      state.dBInstanceId = dbDetail.DBInstanceId
       if (extranetAccess) {
         await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
       }
@@ -152,11 +147,8 @@ class TencentDB extends Component {
     })
 
     // need circle for deleting, after host status is 6, then we can delete it
-    context.debug(`Start removing postgres instance ${dBInstanceName}`)
-    await DeleteServerlessDBInstance(apig, {
-      DBInstanceName: dBInstanceName
-    })
-    context.debug(`Removed postgres instance ${dBInstanceName}.`)
+    await deleteDbInstance(this.context, apig, dBInstanceName)
+
     this.state = {}
     await this.save()
     return {}
