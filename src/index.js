@@ -1,6 +1,6 @@
 const { Component } = require('@serverless/core')
 const { Capi } = require('@tencent-sdk/capi')
-const { getTempKey } = require('./login')
+const tencentAuth = require('serverless-tencent-auth-tool')
 const {
   createDbInstance,
   getDbInstanceDetail,
@@ -20,20 +20,23 @@ const defaults = {
 }
 
 class TencentDB extends Component {
-  async initCredential() {
-    const { context } = this
-    const temp = context.instance.state.status
-    context.instance.state.status = true
-    let { tencent } = context.credentials
-    if (!tencent) {
-      tencent = await getTempKey(temp)
-      context.credentials.tencent = tencent
+  async initCredential(inputs, action) {
+    // login
+    const auth = new tencentAuth()
+    this.context.credentials.tencent = await auth.doAuth(this.context.credentials.tencent, {
+      client: 'tencent-postgresql',
+      remark: inputs.fromClientRemark,
+      project: this.context.instance ? this.context.instance.id : undefined,
+      action: action
+    })
+    if (this.context.credentials.tencent && this.context.credentials.tencent.token) {
+      this.context.credentials.tencent.Token = this.context.credentials.tencent.token
     }
   }
 
   async default(inputs = {}) {
     const { context } = this
-    await this.initCredential()
+    await this.initCredential(inputs, 'default')
     context.status('Deploying')
 
     const {
@@ -43,7 +46,7 @@ class TencentDB extends Component {
       dBInstanceName,
       dBVersion,
       dBCharset,
-      vpcConfig,
+      vpcConfig = {},
       extranetAccess
     } = {
       ...defaults,
@@ -67,7 +70,8 @@ class TencentDB extends Component {
     const outputs = {
       region: region,
       zone: zone,
-      dBInstanceName: dBInstanceName
+      dBInstanceName: dBInstanceName,
+      connects: {}
     }
 
     let dbDetail = await getDbInstanceDetail(context, apig, dBInstanceName)
@@ -77,7 +81,7 @@ class TencentDB extends Component {
       // exist and public access config different, update db instance
       if (publicAccess !== extranetAccess) {
         context.debug(`DB instance ${dBInstanceName} existed, updating...`)
-        await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
+        dbDetail = await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
       } else {
         context.debug(`DB instance ${dBInstanceName} existed.`)
       }
@@ -88,8 +92,11 @@ class TencentDB extends Component {
         ProjectId: projectId,
         DBInstanceName: dBInstanceName,
         DBVersion: dBVersion,
-        DBCharset: dBCharset,
-        VpcId: vpcConfig.vpcId
+        DBCharset: dBCharset
+      }
+
+      if (vpcConfig.vpcId) {
+        postgresInputs.VpcId = vpcConfig.vpcId
       }
 
       if (vpcConfig.subnetId) {
@@ -98,7 +105,7 @@ class TencentDB extends Component {
       dbDetail = await createDbInstance(this.context, apig, postgresInputs)
       state.dBInstanceId = dbDetail.DBInstanceId
       if (extranetAccess) {
-        await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
+        dbDetail = await toggleDbInstanceAccess(context, apig, dBInstanceName, extranetAccess)
       }
     }
 
@@ -117,8 +124,8 @@ class TencentDB extends Component {
         extranetInfo = item
       }
     })
-    outputs.connects = {
-      private: formatPgUrl(internetInfo, accountInfo, dbName)
+    if (vpcConfig.vpcId) {
+      outputs.connects.private = formatPgUrl(internetInfo, accountInfo, dbName)
     }
     if (extranetAccess && extranetInfo) {
       outputs.connects.public = formatPgUrl(extranetInfo, accountInfo, dbName)
@@ -132,7 +139,7 @@ class TencentDB extends Component {
 
   async remove(inputs = {}) {
     const { context } = this
-    await this.initCredential()
+    await this.initCredential(inputs, 'remove')
 
     const { state } = this
     const { region } = state

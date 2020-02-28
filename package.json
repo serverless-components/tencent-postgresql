@@ -47,9 +47,9 @@
   },
   "dependencies": {
     "@serverless/core": "^1.1.2",
-    "@tencent-sdk/capi": "^0.2.10",
-    "@tencent-sdk/login": "^0.0.5",
-    "@ygkit/request": "^0.0.5"
+    "@tencent-sdk/capi": "^0.2.11",
+    "@ygkit/request": "^0.0.5",
+    "serverless-tencent-auth-tool": "^1.0.18"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
