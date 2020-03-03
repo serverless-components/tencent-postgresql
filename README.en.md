@@ -1,6 +1,6 @@
 # Tencent Cloud PostgreSQL Component
 
-[简体中文](https://github.com/serverless-components/tencent-egg/blob/master/README.md) | English
+[简体中文](https://github.com/serverless-components/tencent-postgresql/blob/master/README.md) | English
 
 ## Introduction
 
