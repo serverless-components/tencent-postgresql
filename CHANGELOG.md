@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/serverless-tencent/tencent-postgresql/compare/v0.1.1-alpha.0...v0.1.1) (2020-03-25)
+
+
+### Bug Fixes
+
+* add parameter validate ([39d80a4](https://github.com/serverless-tencent/tencent-postgresql/commit/39d80a4a9299a44b8522411edef995a397a48c75))
+
 ### 0.1.1-alpha.0 (2020-02-28)
 
 
