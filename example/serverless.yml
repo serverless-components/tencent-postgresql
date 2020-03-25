@@ -1,8 +1,8 @@
 MyPostgres:
   component: '@serverless/tencent-postgresql'
   inputs:
-    region: na-siliconvalley
-    zone: na-siliconvalley-1
+    region: ap-beijing
+    zone: ap-beijing-3
     dBInstanceName: postgres-test
     vpcConfig:
       vpcId: vpc-91y4snip

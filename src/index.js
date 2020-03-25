@@ -1,6 +1,10 @@
 const { Component } = require('@serverless/core')
 const { Capi } = require('@tencent-sdk/capi')
 const tencentAuth = require('serverless-tencent-auth-tool')
+const ensureNumber = require('type/number/ensure')
+const ensureObject = require('type/object/ensure')
+const ensureString = require('type/string/ensure')
+
 const {
   createDbInstance,
   getDbInstanceDetail,
@@ -34,10 +38,39 @@ class TencentDB extends Component {
     }
   }
 
+  prepareInputs(inputs) {
+    inputs.region = ensureString(inputs.region, { default: defaults.region })
+    inputs.zone = ensureString(inputs.zone, { default: defaults.zone })
+    inputs.projectId = ensureNumber(inputs.projectId, { default: defaults.projectId })
+    inputs.dBInstanceName = ensureString(inputs.dBInstanceName, {
+      default: defaults.dBInstanceName
+    })
+    inputs.dBVersion = ensureString(inputs.dBVersion, { default: defaults.dBVersion })
+    inputs.dBCharset = ensureString(inputs.dBCharset, { default: defaults.dBCharset })
+    inputs.extranetAccess = inputs.extranetAccess === true ? true : defaults.extranetAccess
+
+    inputs.vpcConfig = ensureObject(inputs.vpcConfig, {
+      isOptional: false,
+      errorMessage: 'vpcConfig is required'
+    })
+    inputs.vpcConfig.vpcId = ensureString(inputs.vpcConfig.vpcId, {
+      isOptional: false,
+      errorMessage: 'vpcId is required'
+    })
+    inputs.vpcConfig.subnetId = ensureString(inputs.vpcConfig.subnetId, {
+      isOptional: false,
+      errorMessage: 'subnetId is required'
+    })
+
+    return inputs
+  }
+
   async default(inputs = {}) {
     const { context } = this
     await this.initCredential(inputs, 'default')
     context.status('Deploying')
+
+    inputs = this.prepareInputs(inputs)
 
     const {
       region,
@@ -46,8 +79,8 @@ class TencentDB extends Component {
       dBInstanceName,
       dBVersion,
       dBCharset,
-      vpcConfig = {},
-      extranetAccess
+      extranetAccess,
+      vpcConfig
     } = {
       ...defaults,
       ...inputs
