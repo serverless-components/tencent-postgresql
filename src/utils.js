@@ -156,8 +156,9 @@ async function deleteDbInstance(context, apig, dBInstanceName) {
  * @param {string} dbName db name
  */
 function formatPgUrl(netInfo, accountInfo, dbName) {
-  return `postgresql://${accountInfo.DBUser}:${accountInfo.DBPassword}@${netInfo.Address ||
-    netInfo.Ip}:${netInfo.Port}/${dbName}`
+  return `postgresql://${accountInfo.DBUser}:${encodeURIComponent(
+    accountInfo.DBPassword
+  )}@${netInfo.Address || netInfo.Ip}:${netInfo.Port}/${dbName}`
 }
 
 module.exports = {
