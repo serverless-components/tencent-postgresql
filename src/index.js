@@ -103,8 +103,7 @@ class TencentDB extends Component {
     const outputs = {
       region: region,
       zone: zone,
-      dBInstanceName: dBInstanceName,
-      connects: {}
+      dBInstanceName: dBInstanceName
     }
 
     let dbDetail = await getDbInstanceDetail(context, apig, dBInstanceName)
@@ -158,10 +157,10 @@ class TencentDB extends Component {
       }
     })
     if (vpcConfig.vpcId) {
-      outputs.connects.private = formatPgUrl(internetInfo, accountInfo, dbName)
+      outputs.private = formatPgUrl(internetInfo, accountInfo, dbName)
     }
     if (extranetAccess && extranetInfo) {
-      outputs.connects.public = formatPgUrl(extranetInfo, accountInfo, dbName)
+      outputs.public = formatPgUrl(extranetInfo, accountInfo, dbName)
     }
 
     this.state = state
