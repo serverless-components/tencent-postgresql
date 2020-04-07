@@ -1,10 +1,14 @@
-MyPostgres:
-  component: '@serverless/tencent-postgresql'
-  inputs:
-    region: ap-beijing
-    zone: ap-beijing-3
-    dBInstanceName: postgres-test
-    vpcConfig:
-      vpcId: vpc-91y4snip
-      subnetId: subnet-nytqgrho
-    extranetAccess: false
+component: postgresql
+name: serverlessDB
+org: test
+app: serverlessDB
+stage: dev
+
+inputs:
+  region: ap-guangzhou
+  zone: ap-guangzhou-2
+  dBInstanceName: serverlessDB
+  vpcConfig:
+    vpcId: vpc-id3zoj6r
+    subnetId: subnet-kwc49rti
+  extranetAccess: true

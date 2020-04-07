@@ -1,0 +1,10 @@
+name: postgresql
+version: 0.0.1
+author: Tencent Cloud Inc.
+org: Tencent Cloud Inc.
+description: Deploy a serverless postgresql database.
+keywords: tencent, serverless, postgresql
+repo: https://github.com/serverless-components/tencent-postgresql/tree/v2
+readme: https://github.com/serverless-components/tencent-postgresql/tree/v2
+license: MIT
+main: ./src

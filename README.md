@@ -1,6 +1,6 @@
 # 腾讯云 PostgreSQL DB 组件
 
-简体中文 | [English](https://github.com/serverless-components/tencent-postgresql/blob/master/README.en.md)
+简体中文 | [English](https://github.com/serverless-components/tencent-postgresql/blob/v2/README.en.md)
 
 ## 简介
 
@@ -32,21 +32,23 @@ $ touch serverless.yml
 
 ```yml
 # serverless.yml
-MyPostgreSQL:
-  component: '@serverless/tencent-postgresql'
-  inputs:
-    region: ap-guangzhou
-    zone: ap-guangzhou-3
-    dBInstanceName: serverlessDb
-    dBVersion: 10.4
-    dBCharset: UTF8
-    vpcConfig:
-      vpcId: 123
-      subnetId: 123
-    extranetAccess: false
+component: postgresql
+name: serverlessDB
+org: test
+app: serverlessDB
+stage: dev
+
+inputs:
+  region: ap-guangzhou
+  zone: ap-guangzhou-2
+  dBInstanceName: serverlessDB
+  vpcConfig:
+    vpcId: vpc-id3zoj6r
+    subnetId: subnet-kwc49rti
+  extranetAccess: false
 ```
 
-- [更多配置](https://github.com/serverless-components/tencent-postgresql/tree/master/docs/configure.md)
+- [更多配置](https://github.com/serverless-components/tencent-postgresql/tree/v2/docs/configure.md)
 
 ### 3. 部署
 
@@ -55,7 +57,7 @@ MyPostgreSQL:
 通过 `sls` 命令进行部署，并可以添加 `--debug` 参数查看部署过程中的信息
 
 ```bash
-$ sls --debug
+$ sls deploy
 ```
 
 > 注意: `sls` 是 `serverless` 命令的简写。
@@ -65,7 +67,7 @@ $ sls --debug
 通过以下命令移除部署的 DB 实例
 
 ```bash
-$ sls remove --debug
+$ sls remove
 ```
 
 ### 5. 账号配置（可选）

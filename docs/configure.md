@@ -4,20 +4,23 @@
 
 ```yml
 # serverless.yml
+component: postgresql # (required) name of the component. In that case, it's express.
+name: serverlessDB # (required) name of your express component instance.
+org: test # (optional) serverless dashboard org. default is the first org you created during signup.
+app: serverlessDB # (optional) serverless dashboard app. default is the same as the name property.
+stage: dev # (optional) serverless dashboard stage. default is dev.
 
-MyPostgres:
-  component: '@serverless/tencent-postgres'
-  inputs:
-    region: ap-guangzhou
-    zone: ap-guangzhou-3
-    projectId: 0
-    dBInstanceName: serverlessDb
-    dBVersion: 10.4
-    dBCharset: UTF8
-    vpcConfig:
-      vpcId: 123
-      subnetId: 123
-    extranetAccess: false
+inputs:
+  region: ap-guangzhou
+  zone: ap-guangzhou-2
+  dBInstanceName: serverlessDB
+  projectId: 0
+  dBVersion: 10.4
+  dBCharset: UTF8
+  vpcConfig:
+    vpcId: vpc-123
+    subnetId: subnet-123
+  extranetAccess: false
 ```
 
 ## Configuration description

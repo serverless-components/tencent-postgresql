@@ -1,6 +1,6 @@
 # Tencent Cloud PostgreSQL Component
 
-[简体中文](https://github.com/serverless-components/tencent-postgresql/blob/master/README.md) | English
+[简体中文](https://github.com/serverless-components/tencent-postgresql/blob/v2/README.md) | English
 
 ## Introduction
 
@@ -45,26 +45,28 @@ TENCENT_SECRET_KEY=XXX
 
 ```yml
 # serverless.yml
-MyPostgreSQL:
-  component: '@serverless/tencent-postgresql'
-  inputs:
-    region: ap-guangzhou
-    zone: ap-guangzhou-3
-    dBInstanceName: serverlessDb
-    dBVersion: 10.4
-    dBCharset: UTF8
-    vpcConfig:
-      vpcId: 123
-      subnetId: 123
-    extranetAccess: false
+component: postgresql
+name: serverlessDB
+org: test
+app: serverlessDB
+stage: dev
+
+inputs:
+  region: ap-guangzhou
+  zone: ap-guangzhou-2
+  dBInstanceName: serverlessDB
+  vpcConfig:
+    vpcId: vpc-123
+    subnetId: subnet-123
+  extranetAccess: false
 ```
 
-- [More Options](https://github.com/serverless-components/tencent-postgresql/blob/master/docs/configure.md)
+- [More Options](https://github.com/serverless-components/tencent-postgresql/blob/v2/docs/configure.md)
 
 ### 4. Deploy
 
 ```bash
-$ sls --debug
+$ sls deploy
 ```
 
 > Notice: `sls` is short for `serverless` command.
@@ -74,7 +76,7 @@ $ sls --debug
 ### 5. Remove
 
 ```bash
-$ sls remove --debug
+$ sls remove
 ```
 
 ### More Components
