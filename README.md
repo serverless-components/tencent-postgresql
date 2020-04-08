@@ -24,7 +24,7 @@
 5. [开发调试](#5-开发调试)
 6. [查看状态](#6-查看状态)
 7. [移除](#7-移除)
-8. [账号配置（可选）](#8-账号配置（可选）)
+8. [账号配置](#8-账号配置)
 
 ### 1. 安装
 
@@ -77,7 +77,7 @@ $ sls --debug
 ```
 
 > 注意: `sls` 是 `serverless` 命令的简写。
-> 如您的账号未 [登录](https://cloud.tencent.com/login) 或 [注册](https://cloud.tencent.com/register) 腾讯云，您需要在本地创建.env文件储存账户信息，详情请看[账号配置](#8-账号配置（可选)。
+> 如您的账号未 [登录](https://cloud.tencent.com/login) 或 [注册](https://cloud.tencent.com/register) 腾讯云，您需要在本地创建.env文件储存账户信息，详情请看[账号配置](#8-账号配置)。
 
 ### 5. 开发调试
 
