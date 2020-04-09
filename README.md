@@ -1,6 +1,6 @@
 # 腾讯云 PostgreSQL DB 组件
 
-简体中文 | [English](https://github.com/serverless-components/tencent-postgresql/blob/master/README.en.md)
+简体中文 | [English](https://github.com/serverless-components/tencent-postgresql/blob/v2/README.en.md)
 
 ## 简介
 
