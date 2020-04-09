@@ -9,7 +9,7 @@
 特性介绍：
 
 - [x] **按需付费** - 按照请求的使用量进行收费，没有请求时无需付费。
-- [x] **"0"配置** - 默认配置将由Serverless完成。
+- [x] **"0"配置** - 默认配置将由 Serverless 完成。
 - [x] **极速部署** - 仅需几秒，创建或更新您的数据库。
 - [x] **便捷协作** - 通过云端数据库的状态信息和部署日志，方便的进行多人协作开发。
 
@@ -28,7 +28,7 @@
 
 ### 1. 安装
 
-通过 npm 全局安装 最新版本的Serverless Framework 
+通过 npm 全局安装 最新版本的 Serverless Framework
 
 ```shell
 $ npm install -g serverless
@@ -37,6 +37,7 @@ $ npm install -g serverless
 ### 2. 创建
 
 创建并进入一个全新目录：
+
 ```
 $ mkdir tencent-postgreSQL && cd tencent-postgreSQL
 ```
@@ -66,13 +67,14 @@ inputs:
     subnetId: subnet-kwc49rti
   extranetAccess: false
 ```
-PostgreSQL组件支持 0 配置部署，也就是可以直接通过配置文件中的默认值进行部署。但你依然可以修改更多可选配置来进一步开发该项目。
+
+PostgreSQL 组件支持 0 配置部署，也就是可以直接通过配置文件中的默认值进行部署。但你依然可以修改更多可选配置来进一步开发该项目。
 
 - [更多配置](https://github.com/serverless-components/tencent-postgresql/tree/master/docs/configure.md)
 
 ### 4. 账号配置
 
-PostgreSQL组件当前暂不支持 CLI 扫描二维码登录，因此您需要本地创建 `.env` 文件来配置持久的环境变量/秘钥信息，
+PostgreSQL 组件当前暂不支持 CLI 扫描二维码登录，因此您需要本地创建 `.env` 文件来配置持久的环境变量/秘钥信息，
 
 ```bash
 $ touch .env # 腾讯云的配置信息
@@ -99,7 +101,7 @@ $ sls --debug
 ```
 
 > 注意: `sls` 是 `serverless` 命令的简写。
-> 如您的账号未 [登录](https://cloud.tencent.com/login) 或 [注册](https://cloud.tencent.com/register) 腾讯云，您需要在本地创建.env文件储存账户信息，详情请看[账号配置](#4-账号配置)。
+> 如您的账号未 [登录](https://cloud.tencent.com/login) 或 [注册](https://cloud.tencent.com/register) 腾讯云，您需要在本地创建.env 文件储存账户信息，详情请看[账号配置](#4-账号配置)。
 
 ### 6. 开发调试
 
@@ -114,7 +116,7 @@ $ sls --debug
 在`serverless.yml`文件所在的目录下，通过如下命令查看部署状态：
 
 ```
-$ serverless info
+$ sls info
 ```
 
 ### 8. 移除
@@ -124,9 +126,8 @@ $ serverless info
 ```bash
 $ sls remove
 ```
+
 和部署类似，支持通过 `sls remove --debug` 命令查看移除过程中的实时日志信息，`sls`是 `serverless` 命令的缩写。
-
-
 
 ### 更多组件
 
