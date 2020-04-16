@@ -7,7 +7,12 @@ class PgComponent extends Component {
     console.log(`Deploying PostgreSQL Database...`)
 
     // 获取腾讯云密钥信息
-    const credentials = this.credentials.tencent
+    const { tmpSecrets } = this.credentials.tencent
+    const credentials = {
+      SecretId: tmpSecrets.TmpSecretId,
+      SecretKey: tmpSecrets.TmpSecretKey,
+      Token: tmpSecrets.Token
+    }
 
     // 对Inputs内容进行标准化
     const pgInputs = await prepareInputs(inputs)
@@ -28,7 +33,12 @@ class PgComponent extends Component {
     console.log(`Removing PostgreSQL Database...`)
 
     const { state } = this
-    const credentials = this.credentials.tencent
+    const { tmpSecrets } = this.credentials.tencent
+    const credentials = {
+      SecretId: tmpSecrets.TmpSecretId,
+      SecretKey: tmpSecrets.TmpSecretKey,
+      Token: tmpSecrets.Token
+    }
     const pgBaas = new Postgresql(credentials, state.region)
 
     await pgBaas.remove({
