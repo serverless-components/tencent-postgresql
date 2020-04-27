@@ -22,9 +22,8 @@
 3. [配置](#3-配置)
 4. [账号配置](#4-账号配置)
 5. [部署](#5-部署)
-6. [开发调试](#6-开发调试)
-7. [查看状态](#7-查看状态)
-8. [移除](#8-移除)
+6. [查看状态](#6-查看状态)
+7. [移除](#7-移除)
 
 ### 1. 安装
 
@@ -59,8 +58,8 @@ app: serverlessDB # (可选) 该 sql 应用名称
 stage: dev # (可选) 用于区分环境信息，默认值是 dev
 
 inputs:
-  region: ap-guangzhou
-  zone: ap-guangzhou-2
+  region: ap-guangzhou  # 可选 ap-guangzhou, ap-shanghai, ap-beijing
+  zone: ap-guangzhou-2  # 可选 ap-guangzhou-2, ap-shanghai-2, ap-beijing-3
   dBInstanceName: serverlessDB
   vpcConfig:
     vpcId: vpc-id3zoj6r
@@ -70,7 +69,10 @@ inputs:
 
 PostgreSQL 组件支持 0 配置部署，也就是可以直接通过配置文件中的默认值进行部署。但你依然可以修改更多可选配置来进一步开发该项目。
 
-- [更多配置](https://github.com/serverless-components/tencent-postgresql/tree/master/docs/configure.md)
+- [更多配置](https://github.com/serverless-components/tencent-postgresql/blob/v2/docs/configure.md)
+
+> 注：当前 PGSQL for Serverless 仅支持 `北京三区，广州二区，上海二区` 三个地域的创建和部署，因此在填写 yaml 中的地域可用区时需要注意填写为正确的地域和对应的 VPC 子网信息。
+
 
 ### 4. 账号配置
 
@@ -97,21 +99,13 @@ TENCENT_SECRET_KEY=123
 通过 `sls` 命令进行部署，并可以添加 `--debug` 参数查看部署过程中的信息
 
 ```bash
-$ sls --debug
+$ sls deploy
 ```
 
 > 注意: `sls` 是 `serverless` 命令的简写。
 > 如您的账号未 [登录](https://cloud.tencent.com/login) 或 [注册](https://cloud.tencent.com/register) 腾讯云，您需要在本地创建.env 文件储存账户信息，详情请看[账号配置](#4-账号配置)。
 
-### 6. 开发调试
-
-部署了云端数据库后，可以通过开发调试能力对该项目进行修改再开发。在本地修改和更新代码后，不需要每次都运行 `sls` 命令来反复部署。你可以直接通过 `serverless dev` 命令对本地代码的改动进行检测和自动上传。
-
-可以通过在 `serverless.yml`文件所在的目录下运行 `serverless dev` 命令开启开发调试能力。
-
-`serverless dev` 同时支持实时输出云端日志，每次部署完毕后，对项目进行访问，即可在命令行中实时输出调用日志，便于查看业务情况和排障。
-
-### 7. 查看状态
+### 6. 查看状态
 
 在`serverless.yml`文件所在的目录下，通过如下命令查看部署状态：
 
@@ -119,7 +113,7 @@ $ sls --debug
 $ sls info
 ```
 
-### 8. 移除
+### 7. 移除
 
 通过以下命令移除部署的 DB 实例，移除后该组件会对应删除云上部署时所创建的所有相关资源。
 
