@@ -11,8 +11,8 @@ app: serverlessDB # (optional) serverless dashboard app. default is the same as 
 stage: dev # (optional) serverless dashboard stage. default is dev.
 
 inputs:
-  region: ap-guangzhou
-  zone: ap-guangzhou-2
+  region: ap-guangzhou # 可选 ap-guangzhou, ap-shanghai, ap-beijing
+  zone: ap-guangzhou-2 # 可选 ap-guangzhou-2, ap-shanghai-2, ap-beijing-3
   dBInstanceName: serverlessDB
   projectId: 0
   dBVersion: 10.4
