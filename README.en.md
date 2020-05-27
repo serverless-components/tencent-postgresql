@@ -82,3 +82,9 @@ $ sls remove
 ### More Components
 
 Checkout the [Serverless Components](https://github.com/serverless/components) repo for more information.
+
+## License
+
+MIT License
+
+Copyright (c) 2020 Tencent Cloud, Inc.
