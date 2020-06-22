@@ -11,7 +11,7 @@
   "author": "Tencent Cloud, Inc.",
   "license": "Apache",
   "dependencies": {
-    "tencent-component-toolkit": "^1.2.4",
+    "tencent-component-toolkit": "^1.11.4",
     "type": "^2.0.0"
   }
 }
