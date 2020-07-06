@@ -1,14 +1,14 @@
-# Configure document
+# 配置文档
 
-## Complete configuration
+## 完整配置
 
 ```yml
 # serverless.yml
-component: postgresql # (required) name of the component. In that case, it's express.
-name: serverlessDB # (required) name of your express component instance.
-org: test # (optional) serverless dashboard org. default is the first org you created during signup.
-app: serverlessDB # (optional) serverless dashboard app. default is the same as the name property.
-stage: dev # (optional) serverless dashboard stage. default is dev.
+component: postgresql # (必填) 组件名称，此处为 postgresql
+name: serverlessDB # (必填) 实例名称
+org: test # (可选) 用于记录组织信息，默认值为您的腾讯云账户 appid
+app: serverlessDB # (可选) 该应用名称
+stage: dev # (可选) 用于区分环境信息，默认值为 dev
 
 inputs:
   region: ap-guangzhou # 可选 ap-guangzhou, ap-shanghai, ap-beijing
@@ -23,18 +23,18 @@ inputs:
   extranetAccess: false
 ```
 
-## Configuration description
+## 配置说明
 
-Main param description
+主要参数说明
 
-| Param              | Required/Optional | Type    | Default | Description                                       |
-| ------------------ | ----------------- | ------- | ------- | ------------------------------------------------- |
-| region             | Required          | String  |         | DB Region                                         |
-| zone               | Required          | String  |         | DB Zone of Region                                 |
-| dBInstanceName     | Required          | String  |         | DB Instance Name, must unique for user            |
-| dBVersion          | Optional          | string  | `10.4`  | PostgreSQL Version. Now support: 9.3.5,9.5.4,10.4 |
-| dBCharset          | Optional          | String  | `UTF8`  | DB charset                                        |
-| projectId          | Optional          | Integer | `0`     | Project ID                                        |
-| vpcConfig.vpcId    | Required          | String  |         | VPC ID                                            |
-| vpcConfig.subnetId | Optional          | String  |         | Subnet ID                                         |
-| extranetAccess     | Optional          | Boolean | `false` | Whether open public access                        |
+| 参数               | 必填/可选 | 类型    | 默认值  | 描述                                            |
+| ------------------ | --------- | ------- | ------- | ----------------------------------------------- |
+| region             | 必填      | String  |         | 数据库的所属地区                                |
+| zone               | 必填      | String  |         | 数据库所在地区的区域                            |
+| dBInstanceName     | 必填      | String  |         | 数据库实例名称，对一用户必须唯一                |
+| dBVersion          | 可选      | string  | `10.4`  | PostgreSQL 版本号，目前支持: 9.3.5, 9.5.4, 10.4 |
+| dBCharset          | 可选      | String  | `UTF8`  | 数据库的字符集编码                              |
+| projectId          | 可选      | Integer | `0`     | 项目的 ID                                       |
+| vpcConfig.vpcId    | 必填      | String  |         | VPC 的 ID                                       |
+| vpcConfig.subnetId | 可选      | String  |         | Subnet 的 ID                                    |
+| extranetAccess     | 可选      | Boolean | `false` | 是否开放公开访问权限                            |
