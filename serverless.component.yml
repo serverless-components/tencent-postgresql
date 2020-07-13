@@ -4,7 +4,7 @@ author: Tencent Cloud, Inc.
 org: Tencent Cloud, Inc.
 description: Deploy a serverless postgresql database.
 keywords: tencent, serverless, postgresql
-repo: https://github.com/serverless-components/tencent-postgresql/tree/v2
-readme: https://github.com/serverless-components/tencent-postgresql/tree/v2/README.md
+repo: https://github.com/serverless-components/tencent-postgresql
+readme: https://github.com/serverless-components/tencent-postgresql/tree/master/README.md
 license: MIT
 main: ./src

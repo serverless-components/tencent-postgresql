@@ -1,13 +1,13 @@
-component: postgresql
-name: serverlessDB
-org: test
-app: serverlessDB
+org: orgDemo
+app: appDemo
 stage: dev
+component: postgresql
+name: postgresqlDemo
 
 inputs:
   region: ap-guangzhou
   zone: ap-guangzhou-2
-  dBInstanceName: serverlessDB
+  dBInstanceName: postgresqlDemo
   vpcConfig:
     vpcId: vpc-id3zoj6r
     subnetId: subnet-kwc49rti

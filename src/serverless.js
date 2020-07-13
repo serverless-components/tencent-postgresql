@@ -3,7 +3,7 @@ const { Postgresql } = require('tencent-component-toolkit')
 const { TypeError } = require('tencent-component-toolkit/src/utils/error')
 const { prepareInputs } = require('./utils')
 
-class PgComponent extends Component {
+class ServerlessComponent extends Component {
   getCredentials() {
     const { tmpSecrets } = this.credentials.tencent
 
@@ -59,4 +59,4 @@ class PgComponent extends Component {
   }
 }
 
-module.exports = PgComponent
+module.exports = ServerlessComponent
