@@ -1,6 +1,5 @@
 {
   "name": "@serverless/postgresql",
-  "version": "0.0.5",
   "main": "src/serverless.js",
   "publishConfig": {
     "access": "public"
