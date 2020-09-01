@@ -1,6 +1,6 @@
 # 腾讯云 PostgreSQL DB 组件
 
-简体中文 | [English](https://github.com/serverless-components/tencent-postgresql/blob/v2/README.en.md)
+简体中文 | [English](./README.en.md)
 
 ## 简介
 
@@ -69,7 +69,7 @@ inputs:
 
 PostgreSQL 组件支持 0 配置部署，也就是可以直接通过配置文件中的默认值进行部署。但你依然可以修改更多可选配置来进一步开发该项目。
 
-- [更多配置](https://github.com/serverless-components/tencent-postgresql/blob/v2/docs/configure.md)
+- [更多配置](/docs/configure.md)
 
 > 注：当前 PGSQL for Serverless 仅支持 `北京三区，广州二区，上海二区` 三个地域的创建和部署，因此在填写 yaml 中的地域可用区时需要注意填写为正确的地域和对应的 VPC 子网信息。
 

@@ -1,6 +1,6 @@
 # Tencent Cloud PostgreSQL Component
 
-[简体中文](https://github.com/serverless-components/tencent-postgresql/blob/v2/README.md) | English
+[简体中文](./README.md) | English
 
 ## Introduction
 
@@ -61,7 +61,7 @@ inputs:
   extranetAccess: false
 ```
 
-- [More Options](https://github.com/serverless-components/tencent-postgresql/blob/v2/docs/configure.md)
+- [More Options](/docs/configure.md)
 
 ### 4. Deploy
 
