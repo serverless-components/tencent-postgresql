@@ -1,10 +1,8 @@
 # 腾讯云 PostgreSQL DB 组件
 
-简体中文 | [English](./README.en.md)
-
 ## 简介
 
-腾讯云 PostgreSQL DB 组件通过使用 [Tencent Serverless Framework](https://github.com/serverless/components/tree/cloud)，基于云上 Serverless 服务，实现“0”配置，便捷开发，可以快速方便的创建，部署和管理腾讯云的 PostgreSQL 产品。
+腾讯云 PostgreSQL DB 组件通过使用 [Serverless Framework](https://github.com/serverless/components)，基于云上 Serverless 服务，实现“0”配置，便捷开发，可以快速方便的创建，部署和管理腾讯云的 PostgreSQL 产品。
 
 特性介绍：
 
@@ -38,7 +36,7 @@ $ npm install -g serverless
 创建并进入一个全新目录：
 
 ```
-$ mkdir tencent-postgreSQL && cd tencent-postgreSQL
+$ mkdir tencent-postgresql && cd tencent-postgresql
 ```
 
 ### 3. 配置
@@ -69,7 +67,7 @@ inputs:
 
 PostgreSQL 组件支持 0 配置部署，也就是可以直接通过配置文件中的默认值进行部署。但你依然可以修改更多可选配置来进一步开发该项目。
 
-- [更多配置](/docs/configure.md)
+- [更多配置](https://github.com/serverless-tencent/tencent-postgresql/tree/master/docs/configure.md)
 
 > 注：当前 PGSQL for Serverless 仅支持 `北京三区，广州二区，上海二区` 三个地域的创建和部署，因此在填写 yaml 中的地域可用区时需要注意填写为正确的地域和对应的 VPC 子网信息。
 
