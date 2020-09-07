@@ -1,3 +1,10 @@
+## [0.0.9](https://github.com/serverless-components/tencent-postgresql/compare/v0.0.8...v0.0.9) (2020-09-07)
+
+
+### Bug Fixes
+
+* update deps ([82670c8](https://github.com/serverless-components/tencent-postgresql/commit/82670c8a3a4faeca823a1dfaabf2f2e8c677de6f))
+
 ## [0.0.8](https://github.com/serverless-components/tencent-postgresql/compare/v0.0.7...v0.0.8) (2020-09-03)
 
 
