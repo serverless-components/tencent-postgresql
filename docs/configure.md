@@ -37,4 +37,4 @@ inputs:
 | projectId          | 可选      | Integer | `0`     | 项目的 ID                                       |
 | vpcConfig.vpcId    | 必填      | String  |         | VPC 的 ID                                       |
 | vpcConfig.subnetId | 可选      | String  |         | Subnet 的 ID                                    |
-| extranetAccess     | 可选      | Boolean | `false` | 是否开放公开访问权限                            |
+| extranetAccess     | 可选      | Boolean | `false` | 是否开启 serverlessDB 实例外网访问              |
