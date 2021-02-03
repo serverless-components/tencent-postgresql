@@ -1,7 +1,7 @@
 const ensureNumber = require('type/number/ensure')
 const ensureObject = require('type/object/ensure')
 const ensureString = require('type/string/ensure')
-const { TypeError } = require('tencent-component-toolkit/src/utils/error')
+const { ApiTypeError } = require('tencent-component-toolkit/lib/utils/error')
 const CONFIGS = require('./config')
 
 const prepareInputs = (inputs) => {
@@ -29,7 +29,7 @@ const prepareInputs = (inputs) => {
       errorMessage: 'subnetId is required'
     })
   } catch (e) {
-    throw new TypeError(`PARAMETER_${CONFIGS.compName.toUpperCase()}`, e.message, e.stack)
+    throw new ApiTypeError(`PARAMETER_${CONFIGS.compName.toUpperCase()}`, e.message, e.stack)
   }
 
   return inputs
