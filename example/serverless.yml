@@ -9,6 +9,6 @@ inputs:
   zone: ap-guangzhou-2
   dBInstanceName: postgresqlDemo
   vpcConfig:
-    vpcId: vpc-id3zoj6r
-    subnetId: subnet-kwc49rti
+    vpcId: vpc-b6531flb
+    subnetId: subnet-eexos4wi
   extranetAccess: true
