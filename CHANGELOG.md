@@ -1,3 +1,10 @@
+# [0.1.0](https://github.com/serverless-components/tencent-postgresql/compare/v0.0.9...v0.1.0) (2021-02-03)
+
+
+### Features
+
+* refactor deploy and remove using db instance id ([95c8f3e](https://github.com/serverless-components/tencent-postgresql/commit/95c8f3ef71316e00027feeb0b9f288870bab6934))
+
 ## [0.0.9](https://github.com/serverless-components/tencent-postgresql/compare/v0.0.8...v0.0.9) (2020-09-07)
 
 
