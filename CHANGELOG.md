@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/serverless-components/tencent-postgresql/compare/v0.1.0...v0.1.1) (2021-02-15)
+
+
+### Bug Fixes
+
+* db instance id not exist for getting detail ([1d8f680](https://github.com/serverless-components/tencent-postgresql/commit/1d8f680309ee7769458b02905139d39b9d519738))
+
 # [0.1.0](https://github.com/serverless-components/tencent-postgresql/compare/v0.0.9...v0.1.0) (2021-02-03)
 
 
