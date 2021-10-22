@@ -2,7 +2,7 @@ name: postgresql
 version: 0.1.1
 author: 'Tencent Cloud, Inc.'
 org: 'Tencent Cloud, Inc.'
-description: Deploy a serverless postgresql database.
+description: Postgre 组件， 允许用户创建部署一个 Serverless PostgreSQL 数据库实例。配合其他组件进行数据库相关应用开发。
 keywords: 'tencent, serverless, postgresql'
 repo: 'https://github.com/serverless-components/tencent-postgresql'
 readme: >-
